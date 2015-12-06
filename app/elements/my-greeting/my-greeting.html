@@ -1,0 +1,197 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+
+<dom-module id="my-loan">
+  <template>
+    <!--<style include="shared-styles"></style> -->
+    <style>
+      :horizontal-section {
+        display: block;
+      }
+            paper-button {
+        width: 100%;
+        margin: 10;
+      }
+
+      .card  {
+              position: absolute; top: 40px; left: 600px; centered;
+              width: 10%;
+              min-width: inherit;
+              top:50%;
+              left: 20%
+              right:30%;
+              bottom: 30%
+              margin: 10;
+            }
+
+      paper-button:hover {
+        background-color: blue;
+        color: white;
+      }
+      paper-dialog.colored {
+  border: 2px solid;
+  border-color: var(--paper-green-500);
+  background-color: var(--paper-light-green-50);
+  color: var(--paper-green-500);
+}
+paper-dialog.size-position {
+  position: fixed;
+  top: 26px;
+  right: 26px;
+  width: 400px;
+  height: 400px;
+  overflow: auto;
+}
+    </style>
+
+    <div id="header"></div>
+    <div class="container"></div>
+    <paper-toolbar>
+        <div class="title flex-direction">Finacle Treasury - Web </div>
+        <paper-icon-button icon="settings" on-tap="showList"></paper-icon-button>
+    </paper-toolbar>
+
+    <paper-card class="card" id ="fxspot" data-dialog="fxspotdeal">
+      <h1> FX SPOT </h1>
+    </paper-card>
+
+    <paper-dialog id="fxspotdeal" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+      <div class="layout vertical">
+          <paper-input label="cpty" type="String" value="{{loanType::input}}" ></paper-input>
+        <paper-input label="cpty" type="String" value="{{loanType::input}}" ></paper-input>
+        <paper-input label="cpty" type="String" value="{{loanType::input}}" ></paper-input>
+      </div>
+    </paper-dialog>
+    <!--
+    <paper-toolbar>
+      <div class="title flex">FT-1</div>
+      <paper-icon-button icon="settings" on-tap="showPage"></paper-icon-button>
+    </paper-toolbar>
+-->
+<!--    <h2 class="page-title"><span> Trade : {{loanType::value}} {{loanCcy::value}} {{loanPayFreq::value}}  - {{loanRate::value}}</span></h2>
+      <div class="horizontal-section">
+    <paper-button raised> {{loanType::value}} - {{loanCcy::value}} - {{loanPayFreq::value}} - {{loanPeriod::value}} </paper-button>
+    </div>
+
+    <span class="paper-font-body2">Update text to change the loan.</span> -->
+    <!-- Listens for "input" event and sets greeting to <input>.value -->
+    <!-- <input class= "paper-font-body2" value="{{loanType::input}}"> -->
+
+
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'my-loan',
+        behaviors: [Polymer.NeonSharedElementAnimatableBehavior],
+
+        listeners: {
+                'fxspot.click': 'handleClick',
+              },
+
+              handleClick: function(e){
+
+                  var button = e.target;
+                  while (!button.hasAttribute('data-dialog') && button !== document.body) {
+                    button = button.parentElement;
+                  }
+                  if (!button.hasAttribute('data-dialog')) {
+                    return;
+                  }
+                  var id = button.getAttribute('data-dialog');
+                  var dialog = document.getElementById(id);
+                  console.log(' Event trigerred');
+                  if (dialog) {
+                    dialog.open();
+                  }
+              },
+
+
+        properties: {
+          animationConfig: {
+            value: function(){
+              return {
+                'entry':[{
+                  name: 'hero-animation',
+                  id: 'hero',
+                  toPage: this
+                }, {
+                  name: 'fade-in-animation',
+                  node: this
+                }],
+                'exit':{
+                  name: 'fade-out-animation',
+                  node: this
+                }
+              };
+            }
+          },
+
+          sharedElements: {
+            value: function(){
+              return {
+                'hero': this.$.header
+              };
+            }
+          },
+
+          showPage: function(){
+            this.fire('show-page');
+          },
+
+          loanType: {
+            type: String,
+            value: 'Fixed Rate loan',
+            notify: true
+          },
+          loanCcy: {
+            type: String,
+            value: 'USD',
+            notify: true
+          },
+          loanRate: {
+            type: Number,
+            notify: true
+          },
+          loanAmt: {
+            type: Number,
+            value: 0,
+            notify: true
+          },
+          loanPayFreq: {
+            type: String,
+            value: 'BULLET',
+            notify: true
+          },
+          loanPeriod: {
+            type: String,
+            value: '1m',
+            notify: true
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
